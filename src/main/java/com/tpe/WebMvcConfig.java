@@ -30,7 +30,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/static/**").//bu url ile gelen istekleri statik olarak sun. Servere gönderme
+        registry.addResourceHandler("/statics/**").//bu url ile gelen istekleri statik olarak sun. Servere gönderme
                 addResourceLocations("/resources/").//statik kaynakların yerini
                 setCachePeriod(0);//cache periyodu için süre verilebilir.
 

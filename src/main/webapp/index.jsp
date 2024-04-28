@@ -5,7 +5,7 @@
 <head>
 <%@page isELIgnored="false" %>
 <title>Student Management System</title>
-<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/style.css?version=1">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/statics/css/style.css?version=1">
 </head>
 <body>
 <div class="container">

@@ -1,27 +1,43 @@
 package com.tpe.service;
 
 import com.tpe.domain.Student;
+import com.tpe.repository.IStudentRepository;
 import com.tpe.repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Component()
-public class StudentService implements IStudentService{
+//@Component
+@Service//@Component anatasyonunun (gelişmiş)özel halidir
+public class StudentService implements IStudentService {
 
     @Autowired
-    private StudentRepository studentRepository;
+    private IStudentRepository repository;
 
-    public StudentService(StudentRepository studentRepository) {
-        this.studentRepository = studentRepository;
+    //1-a
+    @Override
+    public List<Student> listAllStudents() {
+
+        return repository.findAll();
     }
 
-    public List<Student> listAllStudents() {
-        List<Student> studentList;
+    //2-b
+    @Override
+    public void addOrUpdateStudent(Student student) {
+        repository.saveOrUpdate(student);
+    }
 
+    @Override
+    public Student findStudentById(Long id) {
         return null;
+    }
+
+    @Override
+    public void deleteStudent(Long id) {
+
     }
 }

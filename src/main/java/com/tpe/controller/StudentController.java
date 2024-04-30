@@ -1,16 +1,17 @@
 package com.tpe.controller;
 
 import com.tpe.domain.Student;
+import com.tpe.exception.StudentNotFoundException;
 import com.tpe.service.IStudentService;
 import com.tpe.service.StudentService;
+import net.bytebuddy.matcher.StringMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @Controller//requestler bu class ta karşılanacak ve ilgili metotlarla maplenecek
@@ -57,7 +58,7 @@ public class StudentController {
         return "studentForm";
     }
 
-    //ModelAttribute anatasyonu view katmanı ile controller arasında
+    //ModelAttribute anotasyonu view katmanı ile controller arasında
     //modelin transferini sağlar.
     //işlem sonunda: student ın firstname, lastname ve grade değerleri set edilmiş halde
     //controller classında yer alır.
@@ -65,9 +66,46 @@ public class StudentController {
     //2-a : öğrenciyi DB ye ekleme
     //http://localhost:8080/SpringMvc/students/saveStudent + POST
     @PostMapping("/saveStudent")
-    public String addStudent(@ModelAttribute("student") Student student){
+    //modelattribute studentform jsp de de var onu koyacağımızı gösteriyoruz
+    public String addStudent(@Valid @ModelAttribute("student") Student student, BindingResult bindingResult){
+        if(bindingResult.hasErrors()){
+            return "studentForm";
+        }
         service.addOrUpdateStudent(student);
         return "redirect:/students";//http://localhost:8080/SpringMvc/students + GET
     }
 
+    //3-mevcut öğrenciyi güncelleme
+    //http://localhost:8080/SpringMvc/students/update?id=1 + GET
+
+    @GetMapping("/update")
+    //@RequestParam içindeki id adres satırında gelen ile aynı olmak zorunda fakat sonrasında gelen değişken
+    //bizim atadığımız depişken
+    public ModelAndView sendFormUpdate(@RequestParam("id") Long identity){
+        Student foundStudent = service.findStudentById(identity);
+        ModelAndView mav = new ModelAndView();
+        mav.addObject("student", foundStudent);
+        mav.setViewName("studentForm");
+        return mav;
+    }
+
+
+    //4-mevcut öğrenciyi silme
+    //http://localhost:8080/SpringMvc/students/delete/1 +GET
+
+    //@GetMapping("/delete/{id}/{name}")
+    @GetMapping("/delete/{id}")
+    public String deleteStudent(@PathVariable("id") Long identity){
+        service.deleteStudent(identity);
+        return "redirect:/students";
+    }
+
+    //@ExceptionHandler: try - catch bloğu mantığıyla benzer çalışır.
+    @ExceptionHandler(StudentNotFoundException.class)
+    public ModelAndView handleException(Exception ex){
+        ModelAndView mav = new ModelAndView();
+        mav.addObject("message", ex.getMessage());
+        mav.setViewName("notFound");
+        return mav;
+    }
 }
